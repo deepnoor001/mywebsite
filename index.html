@@ -2,74 +2,98 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Indian Road Run - Ultimate Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Indian Road Run - Made by Damandeep</title>
     <style>
         /* --- General Layout --- */
-        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, sans-serif; background: #222; }
+        html, body { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            overflow: hidden; 
+            font-family: 'Segoe UI', Tahoma, sans-serif; background: #222; 
+            touch-action: none; 
+            -webkit-user-select: none; user-select: none;
+        }
         
         #ui-layer {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            pointer-events: none; background: rgba(0,0,0,0.5);
+            pointer-events: none; background: rgba(0,0,0,0.6);
+            z-index: 100;
         }
 
         /* Menu Box */
         #menu-container {
-            background: rgba(20, 20, 20, 0.95); padding: 30px; border-radius: 15px; text-align: center;
+            background: rgba(30, 30, 30, 0.95); padding: 20px; border-radius: 15px; text-align: center;
             pointer-events: auto; border: 4px solid #fff; 
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
-            width: 90%; max-width: 500px;
-            display: block; /* Visible by default */
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
+            width: 85%; max-width: 500px;
+            max-height: 90vh; overflow-y: auto;
         }
 
-        h1 { color: #fff; margin: 0 0 10px 0; font-family: 'Courier New', monospace; letter-spacing: -1px; }
-        h2 { color: #f1c40f; font-size: 18px; margin-bottom: 20px; text-transform: uppercase; }
+        h1 { color: #fff; margin: 0; font-family: 'Courier New', monospace; letter-spacing: -1px; font-size: 28px; }
+        h2 { color: #f1c40f; font-size: 18px; margin-bottom: 15px; text-transform: uppercase; }
         p { color: #aaa; margin-bottom: 20px; font-size: 14px; }
 
-        /* The Step Sections (Hidden by default except first) */
+        /* WATERMARK / CREDITS */
+        #credits {
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #2ecc71; /* Green color to stand out */
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            animation: pulse 2s infinite;
+        }
+        
+        #watermark-overlay {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            font-family: sans-serif;
+            font-size: 12px;
+            z-index: 200;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; text-shadow: 0 0 10px #2ecc71; }
+            100% { opacity: 0.8; }
+        }
+
+        /* Wizard Steps */
         .menu-step { display: none; }
         .menu-step.active { display: block; }
 
-        /* Grid for 9 items */
+        /* Grids */
         .grid-3x3 {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 20px;
-            max-height: 300px;
-            overflow-y: auto;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px;
         }
 
-        /* Selection Buttons */
+        /* Buttons */
         .select-btn {
-            background: #444; border: 2px solid #666; color: white; padding: 10px;
-            height: 60px; border-radius: 0px; cursor: pointer;
-            font-size: 11px; font-weight: bold; text-transform: uppercase;
-            display: flex; align-items: center; justify-content: center;
-            transition: 0.2s;
+            background: #444; border: 2px solid #666; color: white; padding: 5px;
+            height: 55px; cursor: pointer; font-size: 11px; font-weight: bold; 
+            text-transform: uppercase; display: flex; align-items: center; justify-content: center;
         }
-        .select-btn:hover { background: #555; }
-        .select-btn.selected {
-            background: #e67e22; color: white; border-color: white; transform: scale(1.05);
-        }
+        .select-btn.selected { background: #e67e22; color: white; border-color: white; transform: scale(1.05); }
 
-        /* Nav Buttons */
         .nav-btn {
-            padding: 12px 30px; font-size: 18px; border: 3px solid #fff; 
+            padding: 15px; font-size: 18px; border: 3px solid #fff; 
             cursor: pointer; font-weight: bold; text-transform: uppercase; 
             font-family: 'Courier New', monospace; color: white; background: #27ae60;
-            margin: 5px; width: 100%;
+            width: 100%; margin-top: 10px; border-radius: 8px;
         }
-        .nav-btn:hover { background: #2ecc71; }
-        .nav-btn.back { background: #c0392b; }
-        .nav-btn.back:hover { background: #e74c3c; }
+        .nav-btn:active { background: #2ecc71; transform: scale(0.98); }
+        .nav-btn.back { background: #c0392b; margin-top: 5px; }
 
-        /* Scoreboard */
+        /* HUD */
         #hud {
-            position: absolute; top: 20px; left: 20px; right: 20px;
+            position: absolute; top: 15px; left: 20px; right: 20px;
             display: flex; justify-content: space-between;
-            pointer-events: none; display: none;
+            pointer-events: none; display: none; z-index: 50;
         }
         .hud-text {
             color: white; font-size: 24px; font-weight: bold; font-family: 'Courier New', monospace;
@@ -77,28 +101,38 @@
         }
 
         /* Touch Controls */
-        #touch-controls {
-            position: fixed; bottom: 20px; width: 100%; display: flex;
-            justify-content: space-around; padding: 0 30%; box-sizing: border-box;
-            z-index: 100; pointer-events: none; display: none;
+        #touch-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 80; display: none; 
         }
-
-        .touch-btn {
-            width: 80px; height: 80px; background: rgba(255, 255, 255, 0.2);
-            color: white; border: 4px solid white; border-radius: 0px; font-size: 40px;
-            font-weight: 900; cursor: pointer; display: flex;
-            align-items: center; justify-content: center; 
-            pointer-events: auto; user-select: none;
+        .control-zone {
+            width: 50%; height: 100%;
+            display: flex; align-items: flex-end; justify-content: center;
+            padding-bottom: 40px; box-sizing: border-box;
         }
-        .touch-btn:active { background: rgba(255, 255, 255, 0.5); }
+        .visual-btn {
+            width: 100px; height: 100px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 6px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 50px; display: flex; align-items: center; justify-content: center;
+            user-select: none; pointer-events: none; 
+        }
+        .control-zone:active .visual-btn {
+            background: rgba(255, 255, 255, 0.4); transform: scale(0.9);
+        }
+        #zone-left { justify-content: flex-start; padding-left: 30px; }
+        #zone-right { justify-content: flex-end; padding-right: 30px; }
 
+        /* Orientation Message */
         #orientation-message { display: none; }
         @media (max-width: 900px) and (orientation: portrait) {
             #orientation-message {
                 position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-                background: #333; color: white; z-index: 9999;
+                background: #222; color: white; z-index: 9999;
                 display: flex; justify-content: center; align-items: center;
-                font-size: 20px; text-align: center; flex-direction: column; padding: 20px;
+                font-size: 22px; text-align: center; flex-direction: column; padding: 30px;
             }
         }
     </style>
@@ -107,13 +141,24 @@
 <body>
 
     <div id="orientation-message">
-        <p>Rotate for best experience!</p>
-        <p style="font-size: 40px;">🔄</p>
+        <p>Please Rotate Phone to Landscape ↔️</p>
+        <p style="font-size: 50px;">📱</p>
     </div>
+
+    <div id="watermark-overlay">Made by Damandeep from 7-C</div>
 
     <div id="hud">
         <div class="hud-text" id="score-text">Score: 0</div>
         <div class="hud-text" id="target-text">Goal: 500</div>
+    </div>
+
+    <div id="touch-layer">
+        <div id="zone-left" class="control-zone" onpointerdown="movePlayer(-1)">
+            <div class="visual-btn">◀</div>
+        </div>
+        <div id="zone-right" class="control-zone" onpointerdown="movePlayer(1)">
+            <div class="visual-btn">▶</div>
+        </div>
     </div>
 
     <div id="ui-layer">
@@ -122,55 +167,47 @@
             <div id="step-1" class="menu-step active">
                 <h1>INDIAN ROAD RUN</h1>
                 <p>Block Edition</p>
-                <button class="nav-btn" onclick="goToStep(2)">Start Game</button>
+                <div id="credits">Made by Damandeep from 7-C</div>
+                <br>
+                <button class="nav-btn" onclick="requestFullScreenAndNext()">PLAY FULLSCREEN</button>
+                <button class="nav-btn" style="background:#444; margin-top:5px;" onclick="goToStep(2)">Play Normal</button>
             </div>
 
             <div id="step-2" class="menu-step">
                 <h2>Select Vehicle</h2>
-                <div class="grid-3x3" id="vehicle-grid">
-                    </div>
+                <div class="grid-3x3" id="vehicle-grid"></div>
                 <button class="nav-btn" onclick="goToStep(3)">Next</button>
-                <button class="nav-btn back" onclick="goToStep(1)">Back</button>
             </div>
 
             <div id="step-3" class="menu-step">
                 <h2>Select Theme</h2>
-                <div class="grid-3x3" id="theme-grid">
-                    </div>
+                <div class="grid-3x3" id="theme-grid"></div>
                 <button class="nav-btn" onclick="goToStep(4)">Next</button>
                 <button class="nav-btn back" onclick="goToStep(2)">Back</button>
             </div>
 
             <div id="step-4" class="menu-step">
                 <h2>Select Level</h2>
-                <div class="grid-3x3" id="level-grid" style="grid-template-columns: repeat(5, 1fr);">
-                    </div>
-                <button class="nav-btn" onclick="startGame()">RACE!</button>
+                <div class="grid-3x3" id="level-grid" style="grid-template-columns: repeat(5, 1fr);"></div>
+                <button class="nav-btn" onclick="startGame()">START RACE</button>
                 <button class="nav-btn back" onclick="goToStep(3)">Back</button>
             </div>
 
             <div id="step-end" class="menu-step">
-                <h1 id="end-title">FINISHED!</h1>
-                <p id="end-msg">Score: 0</p>
+                <h1 id="end-title" style="font-size:40px;">FINISHED!</h1>
+                <p id="end-msg" style="font-size:20px; color:white;">Score: 0</p>
                 <button class="nav-btn" onclick="goToStep(1)">Main Menu</button>
             </div>
 
         </div>
     </div>
 
-    <div id="touch-controls">
-        <button id="left-btn" class="touch-btn" onclick="movePlayer(-1)">&#9664;</button>
-        <button id="right-btn" class="touch-btn" onclick="movePlayer(1)">&#9654;</button>
-    </div>
-
     <script>
         // --- GAME CONFIGURATION ---
-        
-        // 9 Vehicles
         const VEHICLES = [
             { id: 'rickshaw', name: 'Rickshaw', color: 0xf1c40f },
             { id: 'bike', name: 'Bike', color: 0xe74c3c },
-            { id: 'car', name: 'Sport Car', color: 0x34495e },
+            { id: 'car', name: 'Car', color: 0x34495e },
             { id: 'taxi', name: 'Taxi', color: 0xf39c12 },
             { id: 'police', name: 'Police', color: 0x2980b9 },
             { id: 'truck', name: 'Truck', color: 0x95a5a6 },
@@ -179,28 +216,25 @@
             { id: 'f1', name: 'Racer', color: 0x8e44ad }
         ];
 
-        // 9 Themes
         const THEMES = [
             { id: 'plain', name: 'Plain', road: 0x333333, grass: 0x4caf50, sky: 0x87CEEB },
             { id: 'desert', name: 'Desert', road: 0x7a634e, grass: 0xeed39e, sky: 0xf7a389 },
             { id: 'forest', name: 'Forest', road: 0x2c3e50, grass: 0x1e8449, sky: 0x76d7c4 },
             { id: 'snow', name: 'Snow', road: 0x95a5a6, grass: 0xffffff, sky: 0xd6eaf8 },
-            { id: 'night', name: 'Night City', road: 0x111111, grass: 0x222222, sky: 0x000000 },
+            { id: 'night', name: 'Night', road: 0x111111, grass: 0x222222, sky: 0x000000 },
             { id: 'mars', name: 'Mars', road: 0x8e44ad, grass: 0xc0392b, sky: 0xe74c3c },
-            { id: 'underwater', name: 'Ocean', road: 0x2e86c1, grass: 0x1b4f72, sky: 0x5dade2 },
+            { id: 'ocean', name: 'Ocean', road: 0x2e86c1, grass: 0x1b4f72, sky: 0x5dade2 },
             { id: 'candy', name: 'Candy', road: 0xff9ff3, grass: 0x55efc4, sky: 0x74b9ff },
             { id: 'retro', name: 'Retro', road: 0x2d3436, grass: 0x636e72, sky: 0xff7675 }
         ];
 
-        // 25 Levels (Generated)
         const LEVELS = [];
         for (let i = 1; i <= 25; i++) {
             LEVELS.push({
-                id: i,
-                name: i,
-                speed: 0.3 + (i * 0.04), // Speed increases each level
-                spawnRate: Math.max(20, 90 - (i * 2)), // Spawn gets faster
-                target: 500 + (i * 200) // Target score increases
+                id: i, name: i,
+                speed: 0.3 + (i * 0.04),
+                spawnRate: Math.max(20, 90 - (i * 2)),
+                target: 500 + (i * 200)
             });
         }
 
@@ -225,22 +259,18 @@
 
         const LANE_WIDTH = 2.6;
         const ROAD_WRAP = 40;
-        let isTouchDevice = false;
 
-        // --- SETUP FUNCTIONS ---
-
+        // --- SETUP ---
         function init() {
-            isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
             loadTextures();
-            buildMenu(); // Build the wizard UI
+            buildMenu();
 
-            // Three.js Setup
             scene = new THREE.Scene();
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-            camera.position.set(0, 5, 8);
+            camera.position.set(0, 5, 9); // Pulled back for mobile view
             camera.lookAt(0, 0, -4);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.shadowMap.enabled = true;
             document.body.appendChild(renderer.domElement);
@@ -252,13 +282,11 @@
             dirLight.castShadow = true;
             scene.add(dirLight);
 
-            // Placeholder objects
             createEnvironment();
             playerGroup = new THREE.Group(); scene.add(playerGroup);
 
             window.addEventListener('resize', onResize);
             document.addEventListener('keydown', handleInput);
-            if (!isTouchDevice) document.getElementById('touch-controls').style.display = 'none';
         }
 
         function loadTextures() {
@@ -266,90 +294,66 @@
             ['1.png', '2.png'].forEach(f => loader.load(f, t => bannerTextures.push(t)));
         }
 
-        // --- UI LOGIC (THE WIZARD) ---
-
-        function buildMenu() {
-            // Build Vehicles
-            const vGrid = document.getElementById('vehicle-grid');
-            VEHICLES.forEach((v, idx) => {
-                const btn = document.createElement('button');
-                btn.className = `select-btn ${idx === 0 ? 'selected' : ''}`;
-                btn.innerText = v.name;
-                btn.onclick = () => {
-                    document.querySelectorAll('#vehicle-grid .select-btn').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    selectedVehicleIdx = idx;
-                };
-                vGrid.appendChild(btn);
-            });
-
-            // Build Themes
-            const tGrid = document.getElementById('theme-grid');
-            THEMES.forEach((t, idx) => {
-                const btn = document.createElement('button');
-                btn.className = `select-btn ${idx === 0 ? 'selected' : ''}`;
-                btn.innerText = t.name;
-                btn.style.borderLeft = `5px solid #${t.sky.toString(16)}`; // Color hint
-                btn.onclick = () => {
-                    document.querySelectorAll('#theme-grid .select-btn').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    selectedThemeIdx = idx;
-                };
-                tGrid.appendChild(btn);
-            });
-
-            // Build Levels
-            const lGrid = document.getElementById('level-grid');
-            LEVELS.forEach((l, idx) => {
-                const btn = document.createElement('button');
-                btn.className = `select-btn ${idx === 0 ? 'selected' : ''}`;
-                btn.innerText = l.name;
-                btn.onclick = () => {
-                    document.querySelectorAll('#level-grid .select-btn').forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    selectedLevelIdx = idx;
-                };
-                lGrid.appendChild(btn);
-            });
+        // --- MENU LOGIC ---
+        function requestFullScreenAndNext() {
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) elem.requestFullscreen();
+            else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+            goToStep(2);
         }
 
-        function goToStep(stepNum) {
+        function buildMenu() {
+            const createBtn = (parent, list, onClick) => {
+                const div = document.getElementById(parent);
+                list.forEach((item, idx) => {
+                    const btn = document.createElement('div');
+                    btn.className = `select-btn ${idx === 0 ? 'selected' : ''}`;
+                    btn.innerText = item.name;
+                    if(item.color) btn.style.borderBottom = `3px solid #${item.color.toString(16)}`;
+                    if(item.sky) btn.style.borderBottom = `3px solid #${item.sky.toString(16)}`;
+                    btn.onclick = () => {
+                        div.querySelectorAll('.select-btn').forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                        onClick(idx);
+                    };
+                    div.appendChild(btn);
+                });
+            };
+
+            createBtn('vehicle-grid', VEHICLES, (i) => selectedVehicleIdx = i);
+            createBtn('theme-grid', THEMES, (i) => selectedThemeIdx = i);
+            createBtn('level-grid', LEVELS, (i) => selectedLevelIdx = i);
+        }
+
+        function goToStep(step) {
             document.querySelectorAll('.menu-step').forEach(el => el.classList.remove('active'));
-            document.getElementById(`step-${stepNum}`).classList.add('active');
+            document.getElementById(`step-${step}`).classList.add('active');
         }
 
         function startGame() {
-            // Apply Settings
             const lvl = LEVELS[selectedLevelIdx];
             speed = lvl.speed;
             targetScore = lvl.target;
             currentLevelSettings = lvl;
             
-            const thm = THEMES[selectedThemeIdx];
-            applyTheme(thm);
+            applyTheme(THEMES[selectedThemeIdx]);
 
-            score = 0;
-            lane = 0;
-            lives = 1;
-            spawnTimer = 0;
+            score = 0; lane = 0; lives = 1; spawnTimer = 0;
 
-            // Clean scene
             while(playerGroup.children.length > 0) playerGroup.remove(playerGroup.children[0]);
             obstacles.forEach(ob => scene.remove(ob));
             obstacles = [];
 
-            // Build Player
             const pMesh = buildBlockVehicle(VEHICLES[selectedVehicleIdx].color);
             playerGroup.add(pMesh);
             playerGroup.position.set(0, 0, 0);
             playerGroup.visible = true;
 
-            // UI Switch
-            document.getElementById('menu-container').style.display = 'none';
+            document.getElementById('menu-container').style.display = 'none'; // Hide menu box
+            document.getElementById('ui-layer').style.display = 'none'; // Hide overlay
             document.getElementById('hud').style.display = 'flex';
+            document.getElementById('touch-layer').style.display = 'flex'; // Enable Controls
             document.getElementById('target-text').innerText = "Goal: " + targetScore;
-            
-            if (isTouchDevice) document.getElementById('touch-controls').style.display = 'flex';
 
             isPlaying = true;
             animate();
@@ -358,11 +362,12 @@
         function finishLevel(win) {
             isPlaying = false;
             cancelAnimationFrame(frameId);
+            document.getElementById('ui-layer').style.display = 'flex';
             document.getElementById('menu-container').style.display = 'block';
             document.getElementById('hud').style.display = 'none';
-            document.getElementById('touch-controls').style.display = 'none';
+            document.getElementById('touch-layer').style.display = 'none';
             
-            goToStep('end'); // Show end screen
+            goToStep('end');
             
             const title = document.getElementById('end-title');
             const msg = document.getElementById('end-msg');
@@ -378,14 +383,12 @@
             }
         }
 
-        // --- 3D BUILDERS (BLOCKY STYLE) ---
-
+        // --- 3D BUILDERS (BLOCKS) ---
         function createBlock(w, h, d, color) {
             const geo = new THREE.BoxGeometry(w, h, d);
             const mat = new THREE.MeshPhongMaterial({ color: color, flatShading: true });
             const mesh = new THREE.Mesh(geo, mat);
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
+            mesh.castShadow = true; mesh.receiveShadow = true;
             return mesh;
         }
 
@@ -393,28 +396,24 @@
             const roadGeo = new THREE.PlaneGeometry(8, 200);
             const roadMat = new THREE.MeshPhongMaterial({ color: 0x333333 });
             road = new THREE.Mesh(roadGeo, roadMat);
-            road.rotation.x = -Math.PI / 2;
-            road.receiveShadow = true;
+            road.rotation.x = -Math.PI / 2; road.receiveShadow = true;
             scene.add(road);
 
             const grassGeo = new THREE.PlaneGeometry(60, 200);
             const grassMat = new THREE.MeshPhongMaterial({ color: 0x4caf50 });
-            
             grassLeft = new THREE.Mesh(grassGeo, grassMat);
             grassLeft.rotation.x = -Math.PI / 2; grassLeft.position.set(-34, -0.1, 0);
             scene.add(grassLeft);
-
             grassRight = new THREE.Mesh(grassGeo, grassMat);
             grassRight.rotation.x = -Math.PI / 2; grassRight.position.set(34, -0.1, 0);
             scene.add(grassRight);
 
-            // Banners
             const startZ = -15; const endZ = -200;
             for (let z = startZ; z > endZ; z -= 18) {
-                const elL = buildBanner();
-                elL.position.set(-7, 0, z); elL.rotation.y = Math.PI/4; scene.add(elL); environmentObjects.push(elL);
-                const elR = buildBanner();
-                elR.position.set(7, 0, z); elR.rotation.y = -Math.PI/4; scene.add(elR); environmentObjects.push(elR);
+                const elL = buildBanner(); elL.position.set(-7, 0, z); elL.rotation.y = Math.PI/4; 
+                scene.add(elL); environmentObjects.push(elL);
+                const elR = buildBanner(); elR.position.set(7, 0, z); elR.rotation.y = -Math.PI/4; 
+                scene.add(elR); environmentObjects.push(elR);
             }
         }
 
@@ -428,26 +427,18 @@
 
         function buildBanner() {
             const grp = new THREE.Group();
-            const pole = createBlock(0.2, 3, 0.2, 0x555);
-            pole.position.y = 1.5; grp.add(pole);
-            
+            const pole = createBlock(0.2, 3, 0.2, 0x555); pole.position.y = 1.5; grp.add(pole);
             const tex = bannerTextures.length > 0 ? bannerTextures[Math.floor(Math.random()*bannerTextures.length)] : null;
-            const mat = tex ? new THREE.MeshBasicMaterial({ map: tex }) : new THREE.MeshPhongMaterial({ color: Math.random()>0.5?0xe67e22:0x2ecc71 });
-            
+            const mat = tex ? new THREE.MeshBasicMaterial({ map: tex }) : new THREE.MeshPhongMaterial({ color: 0xffffff });
             const board = new THREE.Mesh(new THREE.BoxGeometry(3, 2, 0.1), mat);
             board.position.y = 2.5; grp.add(board);
             return grp;
         }
 
-        // Generic Voxel Vehicle Builder
         function buildBlockVehicle(color) {
             const grp = new THREE.Group();
-            // Body
-            const body = createBlock(1.4, 0.8, 2.5, color);
-            body.position.y = 0.6; grp.add(body);
-            // Top
-            const top = createBlock(1.2, 0.6, 1.5, color);
-            top.position.y = 1.3; grp.add(top);
+            const body = createBlock(1.4, 0.8, 2.5, color); body.position.y = 0.6; grp.add(body);
+            const top = createBlock(1.2, 0.6, 1.5, color); top.position.y = 1.3; grp.add(top);
             // Wheels
             const w1=createBlock(0.3,0.3,0.3,0x111); w1.position.set(-0.7,0.2,-1); grp.add(w1);
             const w2=createBlock(0.3,0.3,0.3,0x111); w2.position.set(0.7,0.2,-1); grp.add(w2);
@@ -459,7 +450,6 @@
         function spawnObstacle() {
             const rLane = Math.floor(Math.random() * 3) - 1; 
             const xPos = rLane * LANE_WIDTH;
-            // Random obstacle color
             const colors = [0xe74c3c, 0x8e44ad, 0x3498db, 0xf1c40f, 0xffffff];
             const col = colors[Math.floor(Math.random() * colors.length)];
             const mesh = buildBlockVehicle(col);
@@ -469,12 +459,15 @@
         }
 
         // --- GAME LOOP ---
-
         function movePlayer(dir) {
             if (!isPlaying) return;
+            // Prevent pointer events default (zooming/scrolling)
+            if(event && event.preventDefault) event.preventDefault();
+            
             if (dir === -1 && lane > -1) lane--;
             if (dir === 1 && lane < 1) lane++;
         }
+        
         function handleInput(e) {
             if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') movePlayer(-1);
             if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') movePlayer(1);
@@ -484,51 +477,35 @@
             if (!isPlaying) return;
             frameId = requestAnimationFrame(animate);
 
-            // Move World
-            road.position.z += speed;
-            grassLeft.position.z += speed;
-            grassRight.position.z += speed;
+            road.position.z += speed; grassLeft.position.z += speed; grassRight.position.z += speed;
             if (road.position.z > ROAD_WRAP / 2) { 
                 road.position.z -= ROAD_WRAP; grassLeft.position.z -= ROAD_WRAP; grassRight.position.z -= ROAD_WRAP; 
             }
             environmentObjects.forEach(obj => {
-                obj.position.z += speed;
-                if (obj.position.z > 10) obj.position.z -= 200;
+                obj.position.z += speed; if (obj.position.z > 10) obj.position.z -= 200;
             });
 
-            // Player Animation
             const tx = lane * LANE_WIDTH;
             playerGroup.position.x += (tx - playerGroup.position.x) * 0.15;
             playerGroup.rotation.z = (playerGroup.position.x - tx) * 0.1;
             playerGroup.rotation.y = (tx - playerGroup.position.x) * 0.05;
             playerGroup.position.y = Math.sin(Date.now()*0.02)*0.05;
 
-            // Spawning
             spawnTimer++;
             if (spawnTimer > currentLevelSettings.spawnRate) { spawnObstacle(); spawnTimer = 0; }
 
-            // Obstacles & Collision
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 let ob = obstacles[i];
                 ob.position.z += speed;
-
                 if (ob.position.z > -2.5 && ob.position.z < 2) {
-                    if (lives > 0 && Math.abs(ob.position.x - playerGroup.position.x) < 1.3) {
-                        finishLevel(false); // Lose
-                    }
+                    if (lives > 0 && Math.abs(ob.position.x - playerGroup.position.x) < 1.3) finishLevel(false);
                 }
-                if (ob.position.z > 10) {
-                    scene.remove(ob); obstacles.splice(i, 1);
-                }
+                if (ob.position.z > 10) { scene.remove(ob); obstacles.splice(i, 1); }
             }
 
-            // Scoring & Winning
             score += speed;
             document.getElementById('score-text').innerText = "Score: " + Math.floor(score);
-            
-            if (score >= targetScore) {
-                finishLevel(true); // Win
-            }
+            if (score >= targetScore) finishLevel(true);
 
             renderer.render(scene, camera);
         }
